@@ -9,6 +9,11 @@ extern crate raw;
 extern crate result;
 extern crate try_clone;
 
+pub mod prelude {
+    pub use super::raw::{AsRaw, AsRawMut};
+    pub use super::Box;
+}
+
 use core::marker::Unsize;
 use core::mem::size_of;
 use core::ops::{CoerceUnsized, Deref, DerefMut};
