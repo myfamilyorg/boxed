@@ -19,7 +19,7 @@ use core::marker::Unsize;
 use core::mem::size_of;
 use core::ops::{CoerceUnsized, Deref, DerefMut};
 use core::ptr::{drop_in_place, null_mut, write};
-use errors::prelude::*;
+use errors::*;
 use ptr::Ptr;
 use raw::{AsRaw, AsRawMut};
 use result::Result;
