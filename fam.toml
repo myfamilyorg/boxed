@@ -1,0 +1,7 @@
+[crate]
+	lib = "boxed"
+[deps]
+	ptr = { git = "https://github.com/myfamilyorg/ptr" }
+	result = { git = "https://github.com/myfamilyorg/boxed" }
+	ffi = { git = "https://github.com/myfamilyorg/ffi" }
+	error = { git = "https://github.com/myfamilyorg/error" }
