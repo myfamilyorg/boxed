@@ -40,7 +40,7 @@ impl<T: ?Sized + Clone> TryClone for Box<T> {
 impl<T: ?Sized> Drop for Box<T> {
     fn drop(&mut self) {
         if !self.ptr.get_bit() {
-            let value_ptr = self.ptr.raw();
+            let value_ptr = self.ptr.as_mut_ptr();
             if !value_ptr.is_null() {
                 unsafe {
                     drop_in_place(value_ptr);
@@ -57,7 +57,7 @@ where
     Self: Sized,
 {
     fn as_ptr(&self) -> *const T {
-        self.ptr.raw() as *const T
+        self.ptr.as_ptr() as *const T
     }
 }
 
@@ -66,7 +66,7 @@ where
     Self: Sized,
 {
     fn as_mut_ptr(&mut self) -> *mut T {
-        self.ptr.raw() as *mut T
+        self.ptr.as_ptr() as *mut T
     }
 }
 
@@ -77,7 +77,7 @@ where
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
-        unsafe { &*self.ptr.raw() }
+        unsafe { &*self.ptr.as_ptr() }
     }
 }
 
@@ -86,19 +86,19 @@ where
     T: ?Sized,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        unsafe { &mut *self.ptr.raw() }
+        unsafe { &mut *self.ptr.as_mut_ptr() }
     }
 }
 
 impl<T> AsRef<T> for Box<T> {
     fn as_ref(&self) -> &T {
-        unsafe { &*self.ptr.raw() }
+        unsafe { &*self.ptr.as_ptr() }
     }
 }
 
 impl<T> AsMut<T> for Box<T> {
     fn as_mut(&mut self) -> &mut T {
-        unsafe { &mut *self.ptr.raw() }
+        unsafe { &mut *self.ptr.as_mut_ptr() }
     }
 }
 
@@ -134,12 +134,12 @@ impl<T: ?Sized> Box<T> {
         self.ptr.set_bit(false);
     }
 
-    pub unsafe fn from_raw(ptr: Ptr<T>) -> Box<T> {
+    pub unsafe fn from_as_ptr(ptr: Ptr<T>) -> Box<T> {
         Box { ptr }
     }
 
-    pub unsafe fn into_raw(mut self) -> Ptr<T> {
+    pub unsafe fn into_as_ptr(mut self) -> Ptr<T> {
         self.leak();
-        Ptr::new(self.ptr.raw())
+        Ptr::new(self.ptr.as_ptr())
     }
 }
