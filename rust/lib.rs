@@ -19,7 +19,10 @@ use raw::{AsRaw, AsRawMut};
 use result::Result;
 use try_clone::TryClone;
 
-errors!(Alloc);
+errors!(
+    // A memory allocation error occurred
+    Alloc
+);
 
 pub struct Box<T: ?Sized> {
     ptr: Ptr<T>,
@@ -135,11 +138,11 @@ impl<T: ?Sized> Box<T> {
         self.ptr.set_bit(false);
     }
 
-    pub unsafe fn from_as_ptr(ptr: Ptr<T>) -> Box<T> {
+    pub unsafe fn from_raw(ptr: Ptr<T>) -> Box<T> {
         Box { ptr }
     }
 
-    pub unsafe fn into_as_ptr(mut self) -> Ptr<T> {
+    pub unsafe fn into_raw(mut self) -> Ptr<T> {
         self.leak();
         Ptr::new(self.ptr.as_ptr())
     }
