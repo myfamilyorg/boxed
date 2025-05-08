@@ -10,6 +10,7 @@ extern crate result;
 extern crate try_clone;
 
 use core::marker::Unsize;
+use core::mem::size_of;
 use core::ops::{CoerceUnsized, Deref, DerefMut};
 use core::ptr::{drop_in_place, null_mut, write};
 use error::prelude::*;
