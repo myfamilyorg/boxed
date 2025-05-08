@@ -5,5 +5,6 @@
 	result = { git = "https://github.com/myfamilyorg/boxed" }
 	ffi = { git = "https://github.com/myfamilyorg/ffi" }
 	error = { git = "https://github.com/myfamilyorg/error" }
+	errors = { git = "https://github.com/myfamilyorg/errors" }
 	try_clone = { git = "https://github.com/myfamilyorg/try_clone" }
 	raw = { git = "https://github.com/myfamilyorg/raw" }

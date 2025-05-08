@@ -3,6 +3,7 @@
 #![feature(unsize)]
 
 extern crate error;
+extern crate errors;
 extern crate ffi;
 extern crate ptr;
 extern crate raw;
@@ -18,16 +19,11 @@ use core::marker::Unsize;
 use core::mem::size_of;
 use core::ops::{CoerceUnsized, Deref, DerefMut};
 use core::ptr::{drop_in_place, null_mut, write};
-use error::prelude::*;
+use errors::prelude::*;
 use ptr::Ptr;
 use raw::{AsRaw, AsRawMut};
 use result::Result;
 use try_clone::TryClone;
-
-errors!(
-    // A memory allocation error occurred
-    Alloc
-);
 
 pub struct Box<T: ?Sized> {
     ptr: Ptr<T>,
