@@ -5,14 +5,18 @@
 extern crate error;
 extern crate ffi;
 extern crate ptr;
+extern crate raw;
 extern crate result;
+extern crate try_clone;
 
 use core::marker::Unsize;
-use core::ops::CoerceUnsized;
-use core::ptr::{null_mut, write};
+use core::ops::{CoerceUnsized, Deref, DerefMut};
+use core::ptr::{drop_in_place, null_mut, write};
 use error::prelude::*;
 use ptr::Ptr;
+use raw::{AsRaw, AsRawMut};
 use result::Result;
+use try_clone::TryClone;
 
 errors!(Alloc);
 
@@ -25,6 +29,77 @@ where
     T: Unsize<U> + ?Sized,
     U: ?Sized,
 {
+}
+
+impl<T: ?Sized + Clone> TryClone for Box<T> {
+    fn try_clone(&self) -> Result<Self> {
+        Box::new((*(self.ptr)).clone())
+    }
+}
+
+impl<T: ?Sized> Drop for Box<T> {
+    fn drop(&mut self) {
+        if !self.ptr.get_bit() {
+            let value_ptr = self.ptr.raw();
+            if !value_ptr.is_null() {
+                unsafe {
+                    drop_in_place(value_ptr);
+                    ffi::release(value_ptr as *const u8);
+                }
+                self.ptr.set_bit(true);
+            }
+        }
+    }
+}
+
+impl<T: ?Sized> AsRaw<T> for Box<T>
+where
+    Self: Sized,
+{
+    fn as_ptr(&self) -> *const T {
+        self.ptr.raw() as *const T
+    }
+}
+
+impl<T: ?Sized> AsRawMut<T> for Box<T>
+where
+    Self: Sized,
+{
+    fn as_mut_ptr(&mut self) -> *mut T {
+        self.ptr.raw() as *mut T
+    }
+}
+
+impl<T> Deref for Box<T>
+where
+    T: ?Sized,
+{
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        unsafe { &*self.ptr.raw() }
+    }
+}
+
+impl<T> DerefMut for Box<T>
+where
+    T: ?Sized,
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        unsafe { &mut *self.ptr.raw() }
+    }
+}
+
+impl<T> AsRef<T> for Box<T> {
+    fn as_ref(&self) -> &T {
+        unsafe { &*self.ptr.raw() }
+    }
+}
+
+impl<T> AsMut<T> for Box<T> {
+    fn as_mut(&mut self) -> &mut T {
+        unsafe { &mut *self.ptr.raw() }
+    }
 }
 
 impl<T> Box<T> {
